@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Account Vault – Frontend (v1.1)</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --panel: #f7faf7;
+        --soft: #e7f3ea;
+        --line: #d8e6dc;
+        --text: #1b1f1c;
+        --muted: #5b6b5e;
+        --accent: #31c36a;
+        --accent-2: #22a455;
+        --warn: #e6a700;
+        --danger: #e03131;
+        --radius: 16px;
+        --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 12px;
+      }
+      header {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #dff6e7, #b2e0c3);
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow);
+      }
+      .logo b {
+        color: #0e9152;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      .toolbar .grow {
+        flex: 1;
+      }
+      .search {
+        flex: 1;
+        min-width: 160px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .btn {
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .btn.secondary {
+        background: #e8efe9;
+        color: #13693d;
+        border: 1px solid var(--line);
+      }
+      .btn.warn {
+        background: var(--warn);
+      }
+      .btn.danger {
+        background: var(--danger);
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 12px;
+      }
+      .form .full {
+        grid-column: 1 / -1;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 6px 0 2px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      textarea {
+        min-height: 72px;
+        resize: vertical;
+      }
+      .help {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .otp-preview {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecf7ef;
+        border: 1px solid var(--line);
+        font-size: 13px;
+        color: #0e9152;
+      }
+
+      .table {
+        padding: 12px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 120px 80px 1fr 1fr 150px 120px 1fr 140px;
+        gap: 8px;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        margin-bottom: 8px;
+      }
+      .row.head {
+        background: var(--soft);
+        font-weight: 600;
+      }
+      .row img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+      }
+      .cell.mono {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+      .copy {
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 5px 8px;
+        background: #f7fbf8;
+        font-size: 13px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .danger-text {
+        color: var(--danger);
+      }
+
+      @media (max-width: 768px) {
+        .form {
+          grid-template-columns: 1fr;
+        }
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .search {
+          max-width: none;
+        }
+        .row {
+          grid-template-columns: 1fr;
+          gap: 6px;
+          padding: 12px;
+        }
+        .row.head {
+          display: none;
+        }
+        .row > div {
+          font-size: 14px;
+        }
+      }
+      /* Lightbox */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 9999;
+      }
+      .lightbox.is-open {
+        display: block;
+      }
+      .lightbox__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(2px);
+      }
+      .lightbox__content {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .lightbox__content img {
+        max-width: 96vw;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        background: #000;
+        cursor: zoom-out;
+      }
+      .lightbox__close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: #111;
+        font-size: 28px;
+        line-height: 36px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Lightbox xem ảnh to -->
+    <div id="imgModal" class="lightbox" aria-hidden="true">
+      <div class="lightbox__backdrop" data-close></div>
+      <div class="lightbox__content" role="dialog" aria-label="Xem ảnh lớn">
+        <img id="imgModalPic" alt="Preview" />
+        <button class="lightbox__close" type="button" title="Đóng" data-close>
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <div class="logo"><b>AV</b></div>
+          <div>
+            <h1>Account Vault</h1>
+            <div class="sub">
+              Frontend (LocalStorage+API) – Thêm/Xóa – OTP Garena 180s
+            </div>
+          </div>
+        </div>
+        <div class="auth-actions">
+          <span class="auth-status muted">Chưa đăng nhập</span>
+          <button class="btn secondary" id="btnLogin">Đăng nhập</button>
+          <button class="btn secondary" id="btnRegister">Đăng ký</button>
+          <button class="btn secondary" id="btnLogout" style="display: none">
+            Đăng xuất
+          </button>
+        </div>
+        <div class="sub">v1.1 · Thuần HTML/CSS/JS</div>
+      </header>
+
+      <div class="panel">
+        <div class="toolbar">
+          <input
+            id="q"
+            class="search"
+            placeholder="Tìm theo mã, tài khoản, ghi chú…"
+          />
+          <div class="grow"></div>
+          <button class="btn secondary" id="btnExport" title="Xuất JSON">
+            Xuất
+          </button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+          <button class="btn secondary" id="btnImport" title="Nhập JSON">
+            Nhập
+          </button>
+          <button class="btn" id="btnAdd">Thêm tài khoản</button>
+        </div>
+
+        <form id="form" class="form" autocomplete="off">
+          <div class="full"><b>Thêm tài khoản</b></div>
+          <div>
+            <label>Mã tài khoản</label>
+            <input id="f_id" placeholder="VD: ACC001" required />
+          </div>
+          <div>
+            <label>Hình ảnh</label>
+            <input id="f_img" type="file" accept="image/*" />
+            <div class="help">
+              Chọn ảnh (tuỳ chọn). Ảnh sẽ lưu Base64 trên server.
+            </div>
+          </div>
+          <div>
+            <label>Tài khoản (username/email)</label>
+            <input id="f_user" placeholder="username" />
+          </div>
+          <div>
+            <label>Mật khẩu</label>
+            <input id="f_pass" type="password" placeholder="••••••" />
+          </div>
+          <div>
+            <label>Authen (16 ký tự Base32)</label>
+            <input id="f_auth" placeholder="ABCDEFGHJKMNPQRS" maxlength="64" />
+            <div class="help">
+              Tính OTP 6 số (Garena, chu kỳ 180s). Không bắt buộc.
+            </div>
+          </div>
+          <div>
+            <label>Giải mã authen (OTP hiện tại)</label>
+            <div class="otp-preview">
+              <span id="f_otp" class="badge">—</span>
+              <span id="f_otpLeft" class="muted">(—s)</span>
+            </div>
+            <div class="help">
+              Hiện khi nhập Authen. Nên chạy qua http://localhost thay vì
+              file://
+            </div>
+          </div>
+          <div class="full">
+            <label>Ghi chú</label>
+            <textarea
+              id="f_note"
+              placeholder="Ghi mô tả, email khôi phục, QR, v.v."
+            ></textarea>
+          </div>
+          <div
+            class="full"
+            style="display: flex; gap: 10px; justify-content: flex-end"
+          >
+            <button type="button" class="btn secondary" id="btnReset">
+              Xoá form
+            </button>
+            <button type="submit" class="btn">Lưu vào danh sách</button>
+          </div>
+        </form>
+        <div class="table" id="table">
+          <div class="row head">
+            <div>Mã</div>
+            <div>Ảnh</div>
+            <div>Tài khoản</div>
+            <div>Mật khẩu</div>
+            <div>Authen</div>
+            <div>OTP (180s)</div>
+            <div>Ghi chú</div>
+            <div>Thao tác</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="muted">
+            Dữ liệu lưu tại server (SQLite/Postgres) – JWT đăng nhập.
+          </div>
+          <div class="muted">Tổng: <span id="statCount">0</span> tài khoản</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================
+      // Cấu hình API & Auth
+      // ==========================
+      const API_BASE = "http://127.0.0.1:8000"; // đổi khi deploy
+      const TOKEN_KEY = "av_token";
+      const OTP_PERIOD = 180; // Garena 180s
+
+      const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
+      const setToken = (t) =>
+        t
+          ? localStorage.setItem(TOKEN_KEY, t)
+          : localStorage.removeItem(TOKEN_KEY);
+
+      async function apiFetch(
+        path,
+        { method = "GET", body = null, headers = {} } = {}
+      ) {
+        const token = getToken();
+        const h = { "Content-Type": "application/json", ...headers };
+        if (token) h["Authorization"] = `Bearer ${token}`;
+        const res = await fetch(`${API_BASE}${path}`, {
+          method,
+          headers: h,
+          body: body ? JSON.stringify(body) : null,
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          if (res.status === 401) setToken("");
+          throw new Error(`API ${method} ${path} ${res.status}: ${txt}`);
+        }
+        return res.headers.get("content-type")?.includes("application/json")
+          ? res.json()
+          : null;
+      }
+      async function apiFetchForm(path, formObj, { headers = {} } = {}) {
+        const token = getToken();
+        const h = { ...headers };
+        if (token) h["Authorization"] = `Bearer ${token}`;
+        const res = await fetch(`${API_BASE}${path}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            ...h,
+          },
+          body: new URLSearchParams(formObj),
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          if (res.status === 401) setToken("");
+          throw new Error(`API POST ${path} ${res.status}: ${txt}`);
+        }
+        return res.json();
+      }
+
+      // ==========================
+      // Helpers
+      // ==========================
+      const els = {
+        q: document.getElementById("q"),
+        table: document.getElementById("table"),
+        statCount: document.getElementById("statCount"),
+        form: document.getElementById("form"),
+        id: document.getElementById("f_id"),
+        img: document.getElementById("f_img"),
+        user: document.getElementById("f_user"),
+        pass: document.getElementById("f_pass"),
+        auth: document.getElementById("f_auth"),
+        otp: document.getElementById("f_otp"),
+        otpLeft: document.getElementById("f_otpLeft"),
+        note: document.getElementById("f_note"),
+        btnReset: document.getElementById("btnReset"),
+        btnAdd: document.getElementById("btnAdd"),
+        btnExport: document.getElementById("btnExport"),
+        btnImport: document.getElementById("btnImport"),
+        importFile: document.getElementById("importFile"),
+      };
+
+      function fileToDataURL(file) {
+        return new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onload = () => resolve(fr.result);
+          fr.onerror = reject;
+          fr.readAsDataURL(file);
+        });
+      }
+
+      // Escape HTML for safe text injection
+      function esc(s) {
+        return (s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // Lightbox
+      const lb = {
+        modal: document.getElementById("imgModal"),
+        pic: document.getElementById("imgModalPic"),
+        open(src) {
+          if (!src) return;
+          this.pic.src = src;
+          this.modal.classList.add("is-open");
+          this.modal.setAttribute("aria-hidden", "false");
+          document.addEventListener("keydown", onEscClose);
+        },
+        close() {
+          this.modal.classList.remove("is-open");
+          this.modal.setAttribute("aria-hidden", "true");
+          this.pic.src = "";
+          document.removeEventListener("keydown", onEscClose);
+        },
+      };
+      function onEscClose(e) {
+        if (e.key === "Escape") lb.close();
+      }
+      lb.modal.addEventListener("click", (e) => {
+        if (e.target.matches("[data-close]")) lb.close();
+      });
+      els.table.addEventListener("click", (e) => {
+        const img = e.target.closest(".row img");
+        if (img) lb.open(img.getAttribute("src"));
+      });
+
+      // ==========================
+      // Auth (prompt demo)
+      // ==========================
+      const btnLogin = document.getElementById("btnLogin");
+      const btnLogout = document.getElementById("btnLogout");
+      const btnRegister = document.getElementById("btnRegister");
+      const authStatus = document.querySelector(".auth-status");
+
+      function updateAuthButtons() {
+        const has = !!getToken();
+        btnLogin.style.display = has ? "none" : "";
+        btnRegister.style.display = has ? "none" : "";
+        btnLogout.style.display = has ? "" : "none";
+        authStatus.textContent = has ? "Đã đăng nhập" : "Chưa đăng nhập";
+      }
+
+      async function loginFlow() {
+        const email = prompt("Email:");
+        if (!email) return;
+        const password = prompt("Mật khẩu:");
+        if (!password) return;
+        try {
+          const r = await apiFetchForm("/auth/login", {
+            username: email,
+            password,
+          });
+          setToken(r.access_token);
+          alert("Đăng nhập OK");
+          updateAuthButtons();
+          all = await DataStore.list();
+          render();
+          refreshAndScheduleOTP();
+        } catch (e) {
+          alert("Login lỗi: " + e.message);
+        }
+      }
+      async function registerFlow() {
+        const email = prompt("Nhập email để đăng ký:");
+        if (!email) return;
+        const password = prompt("Tạo mật khẩu (>= 6 ký tự):");
+        if (!password || password.length < 6) {
+          alert("Mật khẩu tối thiểu 6 ký tự.");
+          return;
+        }
+        try {
+          await apiFetch("/auth/register", {
+            method: "POST",
+            body: { email, password },
+          });
+          const r = await apiFetchForm("/auth/login", {
+            username: email,
+            password,
+          });
+          setToken(r.access_token);
+          alert("Đăng ký & đăng nhập OK");
+          updateAuthButtons();
+          all = await DataStore.list();
+          render();
+          refreshAndScheduleOTP();
+        } catch (e) {
+          alert("Đăng ký lỗi: " + e.message);
+        }
+      }
+      btnLogin.addEventListener("click", loginFlow);
+      btnLogout.addEventListener("click", () => {
+        setToken("");
+        alert("Đã đăng xuất");
+        updateAuthButtons();
+        all = [];
+        render();
+      });
+      btnRegister.addEventListener("click", registerFlow);
+
+      // ==========================
+      // DataStore (API)
+      // ==========================
+      const DataStore = {
+        async list() {
+          return await apiFetch("/accounts", { method: "GET" });
+        },
+        async upsert(acc) {
+          const payload = {
+            code: acc.id,
+            image_b64: acc.image || null,
+            username: acc.username || null,
+            password: acc.password || null,
+            authen: acc.auth || null,
+            note: acc.note || null,
+          };
+          return await apiFetch("/accounts", { method: "POST", body: payload });
+        },
+        async remove(code) {
+          return await apiFetch(`/accounts/${encodeURIComponent(code)}`, {
+            method: "DELETE",
+          });
+        },
+        async secrets(code) {
+          return await apiFetch(
+            `/accounts/${encodeURIComponent(code)}/secrets`,
+            { method: "GET" }
+          );
+        },
+        async otpBulk(codes) {
+          return await apiFetch(`/accounts/otp/bulk`, {
+            method: "POST",
+            body: { codes },
+          });
+        },
+      };
+
+      // ==========================
+      // State & Render
+      // ==========================
+      let all = [];
+      let filter = "";
+
+      function rowTemplate(item) {
+        const imgHtml = item.image_b64
+          ? `<img src="${item.image_b64}" alt="img">`
+          : '<div class="muted">(trống)</div>';
+        const note = esc(item.note || "");
+        const updated = item.updated_at
+          ? new Date(item.updated_at).toLocaleString()
+          : "";
+        return `
+<div class="row" data-id="${esc(item.code)}">
+<div class="cell mono">${esc(item.code)}</div>
+<div>${imgHtml}</div>
+<div>
+<div class="mono">${esc(item.username || "")}</div>
+<div class="muted" style="font-size:12px">Cập nhật: ${esc(updated)}</div>
+</div>
+<div><button class="copy" data-copy-pass data-code="${esc(
+          item.code
+        )}">Copy mật khẩu</button></div>
+<div><button class="copy" data-copy-auth data-code="${esc(
+          item.code
+        )}">Copy authen</button></div>
+<div class="mono" data-otp>
+<div class="badge" data-otp-code>—</div>
+<div class="muted" data-otp-left>(—s)</div>
+</div>
+<div>${note}</div>
+<div><button class="btn danger" data-del="${esc(item.code)}">Xoá</button></div>
+</div>`;
+      }
+      function render() {
+        const kw = filter.trim().toLowerCase();
+        const list = !kw
+          ? all
+          : all.filter(
+              (x) =>
+                (x.code || "").toLowerCase().includes(kw) ||
+                (x.username || "").toLowerCase().includes(kw) ||
+                (x.note || "").toLowerCase().includes(kw)
+            );
+        // Clear rows
+        document
+          .querySelectorAll("#table .row:not(.head)")
+          .forEach((n) => n.remove());
+        const div = document.createElement("div");
+        div.innerHTML = list.map(rowTemplate).join("");
+        const frag = document.createDocumentFragment();
+        while (div.firstChild) frag.appendChild(div.firstChild);
+        els.table.appendChild(frag);
+        els.statCount.textContent = String(list.length);
+      }
+      // ==========================
+      // OTP bulk refresh
+      // ==========================
+      let otpTimer = null;
+      function scheduleOTP() {
+        if (otpTimer) clearInterval(otpTimer);
+        otpTimer = setInterval(refreshOTPOnce, 3000);
+      }
+      async function refreshOTPOnce() {
+        const rows = [...document.querySelectorAll("#table .row:not(.head)")];
+        if (!rows.length) return;
+        const codes = rows.map((r) => r.getAttribute("data-id"));
+        try {
+          const r = await DataStore.otpBulk(codes); // {results: { CODE: {otp,left} }}
+          for (const row of rows) {
+            const code = row.getAttribute("data-id");
+            const codeEl = row.querySelector("[data-otp-code]");
+            const leftEl = row.querySelector("[data-otp-left]");
+            const obj = r?.results?.[code];
+            if (obj && obj.otp) {
+              codeEl.textContent = obj.otp;
+              leftEl.textContent = `(${obj.left}s)`;
+            } else {
+              codeEl.textContent = "—";
+              leftEl.textContent = "(—s)";
+            }
+          }
+        } catch (e) {
+          /* silent */
+        }
+      }
+      function refreshAndScheduleOTP() {
+        refreshOTPOnce();
+        scheduleOTP();
+      }
+
+      // ==========================
+      // Form logic
+      // ==========================
+      function resetForm() {
+        els.id.value = "";
+        els.img.value = "";
+        els.user.value = "";
+        els.pass.value = "";
+        els.auth.value = "";
+        els.otp.textContent = "—";
+        els.otpLeft.textContent = "(—s)";
+        els.note.value = "";
+      }
+      els.btnReset.addEventListener("click", resetForm);
+      els.btnAdd.addEventListener("click", () => {
+        els.id.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      // Client-side OTP preview (WebCrypto)
+      function base32Decode(str) {
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+        let s = (str || "").toUpperCase().replace(/[^A-Z2-7]/g, "");
+        if (!s) return new Uint8Array();
+        let bits = "";
+        for (const ch of s) {
+          const i = alphabet.indexOf(ch);
+          if (i < 0) continue;
+          bits += i.toString(2).padStart(5, "0");
+        }
+        const out = [];
+        for (let i = 0; i + 8 <= bits.length; i += 8)
+          out.push(parseInt(bits.slice(i, i + 8), 2));
+        return new Uint8Array(out);
+      }
+      function counterToBytes(counter) {
+        const buf = new ArrayBuffer(8),
+          dv = new DataView(buf);
+        dv.setUint32(0, 0);
+        dv.setUint32(4, counter >>> 0);
+        return new Uint8Array(buf);
+      }
+      const subtleOk = typeof window !== "undefined" && crypto && crypto.subtle;
+      const keyCache = new Map();
+      async function importKey(bytes) {
+        const k = Array.from(bytes).join(",");
+        if (keyCache.has(k)) return keyCache.get(k);
+        const kk = await crypto.subtle.importKey(
+          "raw",
+          bytes,
+          { name: "HMAC", hash: "SHA-1" },
+          false,
+          ["sign"]
+        );
+        keyCache.set(k, kk);
+        return kk;
+      }
+      async function previewOTP() {
+        const v = els.auth.value.trim();
+        if (!v || !subtleOk) {
+          els.otp.textContent = "—";
+          els.otpLeft.textContent = "(—s)";
+          return;
+        }
+        try {
+          const secretBytes = base32Decode(v);
+          const nowSec = Math.floor(Date.now() / 1000);
+          const counter = Math.floor(nowSec / OTP_PERIOD);
+          const left = OTP_PERIOD - (nowSec % OTP_PERIOD);
+          const msg = counterToBytes(counter);
+          const key = await importKey(secretBytes);
+          const sig = new Uint8Array(
+            await crypto.subtle.sign("HMAC", key, msg)
+          );
+          const idx = sig[19] & 0x0f;
+          const p =
+            ((sig[idx] << 24) |
+              (sig[idx + 1] << 16) |
+              (sig[idx + 2] << 8) |
+              sig[idx + 3]) >>>
+            0;
+          const num = (p & 0x7fffffff) % 1000000;
+          els.otp.textContent = String(num).padStart(6, "0");
+          els.otpLeft.textContent = `(${left}s)`;
+        } catch {
+          els.otp.textContent = "ERR";
+          els.otpLeft.textContent = "";
+        }
+      }
+      els.auth.addEventListener("input", previewOTP);
+      setInterval(previewOTP, 1000);
+
+      // Submit → upsert
+      els.form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const code = els.id.value.trim();
+        if (!code) {
+          alert("Vui lòng nhập Mã tài khoản");
+          return;
+        }
+        let imgData;
+        if (els.img.files && els.img.files[0]) {
+          try {
+            imgData = await fileToDataURL(els.img.files[0]);
+          } catch {
+            alert("Không đọc được ảnh");
+          }
+        }
+        const item = {
+          id: code,
+          image: imgData,
+          username: els.user.value.trim(),
+          password: els.pass.value,
+          auth: els.auth.value.trim(),
+          note: els.note.value,
+        };
+        try {
+          await DataStore.upsert(item);
+          all = await DataStore.list();
+          render();
+          resetForm();
+          refreshAndScheduleOTP();
+        } catch (err) {
+          alert("Lưu tài khoản lỗi: " + err.message);
+        }
+      });
+
+      // Table actions
+      els.table.addEventListener("click", async (e) => {
+        const t = e.target;
+        if (t.matches("[data-copy-pass]")) {
+          const code = t.getAttribute("data-code");
+          try {
+            const s = await DataStore.secrets(code);
+            await navigator.clipboard.writeText(s?.password || "");
+            t.textContent = "Đã copy";
+            setTimeout(() => (t.textContent = "Copy mật khẩu"), 1000);
+          } catch (err) {
+            alert("Không lấy được mật khẩu: " + err.message);
+          }
+        }
+        if (t.matches("[data-copy-auth]")) {
+          const code = t.getAttribute("data-code");
+          try {
+            const s = await DataStore.secrets(code);
+            await navigator.clipboard.writeText(s?.authen || "");
+            t.textContent = "Đã copy";
+            setTimeout(() => (t.textContent = "Copy authen"), 1000);
+          } catch (err) {
+            alert("Không lấy được authen: " + err.message);
+          }
+        }
+        if (t.matches("[data-del]")) {
+          const code = t.getAttribute("data-del");
+          if (confirm(`Xoá tài khoản "${code}"?`)) {
+            try {
+              await DataStore.remove(code);
+              all = await DataStore.list();
+              render();
+              refreshAndScheduleOTP();
+            } catch (err) {
+              alert("Xoá lỗi: " + err.message);
+            }
+          }
+        }
+      });
+
+      // Search
+      els.q.addEventListener("input", () => {
+        filter = els.q.value;
+        render();
+        refreshAndScheduleOTP();
+      });
+
+      // Export & Import
+      els.btnExport.addEventListener("click", async () => {
+        try {
+          const list = await DataStore.list();
+          const data = JSON.stringify(list, null, 2);
+          const blob = new Blob([data], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "account-vault.json";
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert("Export lỗi: " + err.message);
+        }
+      });
+      els.btnImport.addEventListener("click", () => els.importFile.click());
+      els.importFile.addEventListener("change", () => {
+        const f = els.importFile.files?.[0];
+        if (!f) return;
+        const rd = new FileReader();
+        rd.onload = async () => {
+          try {
+            const arr = JSON.parse(rd.result);
+            if (Array.isArray(arr)) {
+              for (const it of arr) {
+                const mapped = {
+                  id: it.code || it.id,
+                  image: it.image_b64 || it.image,
+                  username: it.username || "",
+                  password: "",
+                  auth: "",
+                  note: it.note || "",
+                };
+                await DataStore.upsert(mapped);
+              }
+              all = await DataStore.list();
+              render();
+              alert("Nhập xong!");
+              refreshAndScheduleOTP();
+            } else alert("Tệp không đúng định dạng");
+          } catch (e) {
+            alert("Không đọc được JSON: " + e.message);
+          }
+        };
+        rd.readAsText(f);
+        els.importFile.value = "";
+      });
+
+      // Init
+      (async function init() {
+        updateAuthButtons();
+        try {
+          if (getToken()) all = await DataStore.list();
+          else all = [];
+          render();
+          previewOTP();
+          refreshAndScheduleOTP();
+        } catch (e) {
+          console.warn("Không tải được danh sách:", e);
+        }
+      })();
+    </script>
+  </body>
+</html>
