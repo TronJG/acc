@@ -1,991 +1,425 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Account Vault – Frontend (v1.1)</title>
-    <style>
-      :root {
-        --bg: #ffffff;
-        --panel: #f7faf7;
-        --soft: #e7f3ea;
-        --line: #d8e6dc;
-        --text: #1b1f1c;
-        --muted: #5b6b5e;
-        --accent: #31c36a;
-        --accent-2: #22a455;
-        --warn: #e6a700;
-        --danger: #e03131;
-        --radius: 16px;
-        --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        height: 100%;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
-      }
-      .wrap {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 12px;
-      }
-      header {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 14px;
-      }
-      .brand {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #dff6e7, #b2e0c3);
-        display: grid;
-        place-items: center;
-        box-shadow: var(--shadow);
-      }
-      .logo b {
-        color: #0e9152;
-      }
-      h1 {
-        font-size: 18px;
-        margin: 0;
-      }
-      .sub {
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .panel {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-        padding: 10px;
-        border-bottom: 1px solid var(--line);
-      }
-      .toolbar .grow {
-        flex: 1;
-      }
-      .search {
-        flex: 1;
-        min-width: 160px;
-        padding: 8px 12px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: #fff;
-      }
-      .btn {
-        padding: 8px 12px;
-        border: 0;
-        border-radius: 12px;
-        background: var(--accent);
-        color: #fff;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      .btn.secondary {
-        background: #e8efe9;
-        color: #13693d;
-        border: 1px solid var(--line);
-      }
-      .btn.warn {
-        background: var(--warn);
-      }
-      .btn.danger {
-        background: var(--danger);
-      }
-      .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      .form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        padding: 12px;
-      }
-      .form .full {
-        grid-column: 1 / -1;
-      }
-      label {
-        display: block;
-        font-size: 13px;
-        color: var(--muted);
-        margin: 6px 0 2px;
-      }
-      input,
-      textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: #fff;
-      }
-      textarea {
-        min-height: 72px;
-        resize: vertical;
-      }
-      .help {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .otp-preview {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: #ecf7ef;
-        border: 1px solid var(--line);
-        font-size: 13px;
-        color: #0e9152;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ToDo Mobile — Local Only</title>
+  <meta name="theme-color" content="#111827" />
+  <style>
+    /* =====================
+       MOBILE-FIRST STYLES
+       ===================== */
+    :root{
+      --bg: #0b1220;           /* base (dark) */
+      --card: #121a2a;
+      --ink: #e5e7eb;          /* text */
+      --ink-dim:#b6c2d2;
+      --muted:#94a3b8;
+      --brand:#22d3ee;         /* cyan */
+      --brand-2:#38bdf8;       /* sky */
+      --ok:#10b981;            /* green */
+      --warn:#f59e0b;          /* amber */
+      --danger:#ef4444;        /* red */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
 
-      .table {
-        padding: 12px;
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg: #f4f7fb;
+        --card: #ffffff;
+        --ink: #0f172a;
+        --ink-dim:#42526b;
+        --muted:#64748b;
+        --shadow: 0 8px 24px rgba(2,6,23,.08);
       }
-      .row {
-        display: grid;
-        grid-template-columns: 120px 80px 1fr 1fr 150px 120px 1fr 140px;
-        gap: 8px;
-        align-items: center;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 10px;
-        margin-bottom: 8px;
-      }
-      .row.head {
-        background: var(--soft);
-        font-weight: 600;
-      }
-      .row img {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-      }
-      .cell.mono {
-        font-family: ui-monospace, Menlo, Consolas, monospace;
-      }
-      .copy {
-        cursor: pointer;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 5px 8px;
-        background: #f7fbf8;
-        font-size: 13px;
-      }
-      .muted {
-        color: var(--muted);
-      }
-      .footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        border-top: 1px solid var(--line);
-      }
-      .danger-text {
-        color: var(--danger);
-      }
+    }
 
-      @media (max-width: 768px) {
-        .form {
-          grid-template-columns: 1fr;
-        }
-        .toolbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .search {
-          max-width: none;
-        }
-        .row {
-          grid-template-columns: 1fr;
-          gap: 6px;
-          padding: 12px;
-        }
-        .row.head {
-          display: none;
-        }
-        .row > div {
-          font-size: 14px;
-        }
-      }
-      /* Lightbox */
-      .lightbox {
-        position: fixed;
-        inset: 0;
-        display: none;
-        z-index: 9999;
-      }
-      .lightbox.is-open {
-        display: block;
-      }
-      .lightbox__backdrop {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(2px);
-      }
-      .lightbox__content {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-      }
-      .lightbox__content img {
-        max-width: 96vw;
-        max-height: 90vh;
-        object-fit: contain;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-        background: #000;
-        cursor: zoom-out;
-      }
-      .lightbox__close {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: #fff;
-        color: #111;
-        font-size: 28px;
-        line-height: 36px;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: var(--shadow);
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Lightbox xem ảnh to -->
-    <div id="imgModal" class="lightbox" aria-hidden="true">
-      <div class="lightbox__backdrop" data-close></div>
-      <div class="lightbox__content" role="dialog" aria-label="Xem ảnh lớn">
-        <img id="imgModalPic" alt="Preview" />
-        <button class="lightbox__close" type="button" title="Đóng" data-close>
-          &times;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--ink); font: 16px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app{ max-width: 720px; margin: 0 auto; min-height:100%; display:flex; flex-direction:column; }
+
+    /* Topbar */
+    .topbar{ position:sticky; top:0; z-index:5; padding: env(safe-area-inset-top) 16px 12px; backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(11,18,32,.85), rgba(11,18,32,.6)); border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    @media(prefers-color-scheme: light){
+      .topbar{ background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.7)); border-bottom:1px solid rgba(2,6,23,.06); }
+    }
+    .top-title{ display:flex; align-items:center; gap:10px; }
+    .logo{ width:28px; height:28px; border-radius:8px; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); }
+    h1{ font-size:18px; margin:0; letter-spacing:.2px }
+
+    .quick-add{ margin-top:10px; display:grid; grid-template-columns:1fr auto; gap:10px; }
+    .input{ width:100%; border:none; outline:none; background:var(--card); color:var(--ink); padding:14px 14px; border-radius:14px; box-shadow: var(--shadow);
+      transition:.2s box-shadow, .2s transform; }
+    .input::placeholder{ color:var(--muted) }
+    .btn{ appearance:none; border:none; cursor:pointer; border-radius:14px; padding:0 16px; display:inline-flex; align-items:center; justify-content:center; gap:8px; 
+      height:48px; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color:#06202a; font-weight:700; letter-spacing:.2px; box-shadow: var(--shadow); }
+    .btn:active{ transform: translateY(1px) }
+
+    /* Search + Filter */
+    .toolbar{ padding:12px 16px; display:grid; grid-template-columns: 1fr 42px; gap:10px; }
+    .chipbar{ display:flex; gap:8px; overflow:auto; padding: 0 16px 10px; scrollbar-width:none; }
+    .chipbar::-webkit-scrollbar{ display:none }
+    .chip{ flex:0 0 auto; height:36px; padding:0 12px; border-radius:999px; display:inline-flex; align-items:center; gap:8px; font-weight:600; color:var(--ink-dim); background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.06); }
+    .chip.active{ color:#06202a; background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; }
+
+    /* List */
+    .list{ padding: 0 16px 120px; display:grid; gap:12px; }
+    .card{ position:relative; border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); overflow:hidden; }
+
+    /* Swipe background rails */
+    .rail{ position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 16px; pointer-events:none; font-weight:700; }
+    .rail .left{ color:var(--ok); opacity:.9 }
+    .rail .right{ color:var(--danger); opacity:.9 }
+
+    .item{ position:relative; display:grid; grid-template-columns:auto 1fr auto; gap:12px; padding:14px 14px; align-items:flex-start; touch-action: pan-y; }
+
+    .check{ width:22px; height:22px; border-radius:8px; background: rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.18); display:grid; place-items:center; margin-top:2px; }
+    .check svg{ opacity:0; transform:scale(.5); transition:.15s }
+    .check.done{ background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.8); }
+    .check.done svg{ opacity:1; transform:none }
+
+    .meta{ min-width:0 }
+    .title{ font-weight:700; font-size:15px; line-height:1.35; word-wrap:break-word; }
+    .title.done{ text-decoration: line-through; color: var(--muted); }
+    .sub{ margin-top:6px; display:flex; flex-wrap:wrap; gap:8px; }
+    .badge{ font-size:12px; color:var(--ink-dim); background: rgba(255,255,255,.06); padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,.06)}
+    .prio-1{ color: #ef4444; }
+    .prio-2{ color: #f59e0b; }
+    .prio-3{ color: #10b981; }
+
+    .actions{ display:flex; gap:6px; }
+    .iconbtn{ width:40px; height:40px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); display:grid; place-items:center; }
+    .iconbtn:active{ transform: translateY(1px) }
+
+    /* Bottom nav */
+    .bottom{ position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(11,18,32,.8); backdrop-filter: blur(12px); border-top:1px solid rgba(255,255,255,.06);} 
+    @media(prefers-color-scheme: light){ .bottom{ background: rgba(255,255,255,.85); border-top:1px solid rgba(2,6,23,.06);} }
+    .bottom .row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; }
+    .bbtn{ height:48px; border-radius:14px; display:grid; place-items:center; font-size:12px; color:var(--ink-dim); border:1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.04) }
+    .bbtn.active{ color:#06202a; background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; font-weight:800; }
+
+    /* Modal */
+    .modal{ position: fixed; inset:0; z-index:20; display:none; align-items:flex-end; justify-content:center; padding: 24px 16px; background: rgba(0,0,0,.35); }
+    .sheet{ width:100%; max-width:720px; border-radius: 20px; background: var(--card); box-shadow: var(--shadow); padding:16px; }
+    .grid{ display:grid; gap:10px; }
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .label{ font-size:12px; color:var(--muted) }
+    .sel, .textarea{ width:100%; border:none; outline:none; background: rgba(255,255,255,.06); color:var(--ink); padding:12px 12px; border-radius:12px; }
+    .textarea{ min-height: 84px; resize: vertical; }
+
+    .empty{ text-align:center; opacity:.7; padding:28px 8px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="top-title">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>ToDo Mobile</h1>
+      </div>
+      <div class="quick-add">
+        <input id="newTitle" class="input" placeholder="Thêm việc cần làm... (ví dụ: Gọi khách, đăng acc)" />
+        <button id="addBtn" class="btn" title="Thêm">+ Thêm</button>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" class="input" placeholder="Tìm kiếm..." />
+      <button id="moreBtn" class="iconbtn" title="Thêm chi tiết">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+
+    <div class="chipbar" id="chipbar">
+      <button class="chip active" data-filter="all">Tất cả</button>
+      <button class="chip" data-filter="today">Hôm nay</button>
+      <button class="chip" data-filter="pending">Chưa xong</button>
+      <button class="chip" data-filter="done">Đã xong</button>
+      <button class="chip" data-filter="priority">Ưu tiên</button>
+    </div>
+
+    <main class="list" id="list"></main>
+
+    <footer class="bottom">
+      <div class="row">
+        <button class="bbtn active" data-filter="all">Tất cả</button>
+        <button class="bbtn" data-filter="today">Hôm nay</button>
+        <button class="bbtn" data-filter="pending">Chưa xong</button>
+        <button class="bbtn" id="exportBtn">Sao lưu</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Detail / Add-more Modal -->
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px">
+        <strong>Chi tiết công việc</strong>
+        <button class="iconbtn" id="closeModal" title="Đóng">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-    </div>
-
-    <div class="wrap">
-      <header>
-        <div class="brand">
-          <div class="logo"><b>AV</b></div>
+      <div class="grid">
+        <div>
+          <div class="label">Tiêu đề</div>
+          <input id="fTitle" class="sel" placeholder="Nhập tiêu đề..." />
+        </div>
+        <div class="row2">
           <div>
-            <h1>Account Vault</h1>
-            <div class="sub">
-              Frontend (LocalStorage+API) – Thêm/Xóa – OTP Garena 180s
-            </div>
+            <div class="label">Hạn</div>
+            <input id="fDue" class="sel" type="date" />
+          </div>
+          <div>
+            <div class="label">Mức ưu tiên</div>
+            <select id="fPrio" class="sel">
+              <option value="2">Trung bình</option>
+              <option value="1">Cao</option>
+              <option value="3">Thấp</option>
+            </select>
           </div>
         </div>
-        <div class="auth-actions">
-          <span class="auth-status muted">Chưa đăng nhập</span>
-          <button class="btn secondary" id="btnLogin">Đăng nhập</button>
-          <button class="btn secondary" id="btnRegister">Đăng ký</button>
-          <button class="btn secondary" id="btnLogout" style="display: none">
-            Đăng xuất
+        <div>
+          <div class="label">Ghi chú</div>
+          <textarea id="fNotes" class="textarea" placeholder="Mô tả chi tiết... (tuỳ chọn)"></textarea>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button id="saveDetail" class="btn" style="flex:1">Lưu</button>
+          <button id="deleteTask" class="iconbtn" title="Xoá" style="width:56px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
           </button>
-        </div>
-        <div class="sub">v1.1 · Thuần HTML/CSS/JS</div>
-      </header>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input
-            id="q"
-            class="search"
-            placeholder="Tìm theo mã, tài khoản, ghi chú…"
-          />
-          <div class="grow"></div>
-          <button class="btn secondary" id="btnExport" title="Xuất JSON">
-            Xuất
-          </button>
-          <input type="file" id="importFile" accept="application/json" hidden />
-          <button class="btn secondary" id="btnImport" title="Nhập JSON">
-            Nhập
-          </button>
-          <button class="btn" id="btnAdd">Thêm tài khoản</button>
-        </div>
-
-        <form id="form" class="form" autocomplete="off">
-          <div class="full"><b>Thêm tài khoản</b></div>
-          <div>
-            <label>Mã tài khoản</label>
-            <input id="f_id" placeholder="VD: ACC001" required />
-          </div>
-          <div>
-            <label>Hình ảnh</label>
-            <input id="f_img" type="file" accept="image/*" />
-            <div class="help">
-              Chọn ảnh (tuỳ chọn). Ảnh sẽ lưu Base64 trên server.
-            </div>
-          </div>
-          <div>
-            <label>Tài khoản (username/email)</label>
-            <input id="f_user" placeholder="username" />
-          </div>
-          <div>
-            <label>Mật khẩu</label>
-            <input id="f_pass" type="password" placeholder="••••••" />
-          </div>
-          <div>
-            <label>Authen (16 ký tự Base32)</label>
-            <input id="f_auth" placeholder="ABCDEFGHJKMNPQRS" maxlength="64" />
-            <div class="help">
-              Tính OTP 6 số (Garena, chu kỳ 180s). Không bắt buộc.
-            </div>
-          </div>
-          <div>
-            <label>Giải mã authen (OTP hiện tại)</label>
-            <div class="otp-preview">
-              <span id="f_otp" class="badge">—</span>
-              <span id="f_otpLeft" class="muted">(—s)</span>
-            </div>
-            <div class="help">
-              Hiện khi nhập Authen. Nên chạy qua http://localhost thay vì
-              file://
-            </div>
-          </div>
-          <div class="full">
-            <label>Ghi chú</label>
-            <textarea
-              id="f_note"
-              placeholder="Ghi mô tả, email khôi phục, QR, v.v."
-            ></textarea>
-          </div>
-          <div
-            class="full"
-            style="display: flex; gap: 10px; justify-content: flex-end"
-          >
-            <button type="button" class="btn secondary" id="btnReset">
-              Xoá form
-            </button>
-            <button type="submit" class="btn">Lưu vào danh sách</button>
-          </div>
-        </form>
-        <div class="table" id="table">
-          <div class="row head">
-            <div>Mã</div>
-            <div>Ảnh</div>
-            <div>Tài khoản</div>
-            <div>Mật khẩu</div>
-            <div>Authen</div>
-            <div>OTP (180s)</div>
-            <div>Ghi chú</div>
-            <div>Thao tác</div>
-          </div>
-        </div>
-
-        <div class="footer">
-          <div class="muted">
-            Dữ liệu lưu tại server (SQLite/Postgres) – JWT đăng nhập.
-          </div>
-          <div class="muted">Tổng: <span id="statCount">0</span> tài khoản</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      // ==========================
-      // Cấu hình API & Auth
-      // ==========================
-      const API_BASE = "https://acc-ls6r.onrender.com"; // đổi khi deploy
-      const TOKEN_KEY = "av_token";
-      const OTP_PERIOD = 180; // Garena 180s
+  <input id="filePicker" type="file" accept="application/json" style="display:none" />
 
-      const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
-      const setToken = (t) =>
-        t
-          ? localStorage.setItem(TOKEN_KEY, t)
-          : localStorage.removeItem(TOKEN_KEY);
+  <script>
+    // ============================
+    // Simple Local ToDo (Mobile)
+    // ============================
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
 
-      async function apiFetch(
-        path,
-        { method = "GET", body = null, headers = {} } = {}
-      ) {
-        const token = getToken();
-        const h = { "Content-Type": "application/json", ...headers };
-        if (token) h["Authorization"] = `Bearer ${token}`;
-        const res = await fetch(`${API_BASE}${path}`, {
-          method,
-          headers: h,
-          body: body ? JSON.stringify(body) : null,
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          if (res.status === 401) setToken("");
-          throw new Error(`API ${method} ${path} ${res.status}: ${txt}`);
-        }
-        return res.headers.get("content-type")?.includes("application/json")
-          ? res.json()
-          : null;
-      }
-      async function apiFetchForm(path, formObj, { headers = {} } = {}) {
-        const token = getToken();
-        const h = { ...headers };
-        if (token) h["Authorization"] = `Bearer ${token}`;
-        const res = await fetch(`${API_BASE}${path}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            ...h,
-          },
-          body: new URLSearchParams(formObj),
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          if (res.status === 401) setToken("");
-          throw new Error(`API POST ${path} ${res.status}: ${txt}`);
-        }
-        return res.json();
-      }
+    const storeKey = 'todo_mobile_v1';
+    let tasks = load();
+    let filter = 'all';
+    let editingId = null;
 
-      // ==========================
-      // Helpers
-      // ==========================
-      const els = {
-        q: document.getElementById("q"),
-        table: document.getElementById("table"),
-        statCount: document.getElementById("statCount"),
-        form: document.getElementById("form"),
-        id: document.getElementById("f_id"),
-        img: document.getElementById("f_img"),
-        user: document.getElementById("f_user"),
-        pass: document.getElementById("f_pass"),
-        auth: document.getElementById("f_auth"),
-        otp: document.getElementById("f_otp"),
-        otpLeft: document.getElementById("f_otpLeft"),
-        note: document.getElementById("f_note"),
-        btnReset: document.getElementById("btnReset"),
-        btnAdd: document.getElementById("btnAdd"),
-        btnExport: document.getElementById("btnExport"),
-        btnImport: document.getElementById("btnImport"),
-        importFile: document.getElementById("importFile"),
+    function load(){
+      try{ return JSON.parse(localStorage.getItem(storeKey)) || [] }catch{ return [] }
+    }
+    function save(){ localStorage.setItem(storeKey, JSON.stringify(tasks)) }
+
+    function uid(){ return Math.random().toString(36).slice(2,9) + Date.now().toString(36) }
+
+    function addTask(title, opts={}){
+      const t = {
+        id: uid(),
+        title: title.trim(),
+        notes: opts.notes || '',
+        due: opts.due || '',
+        prio: opts.prio || 2, // 1 high, 2 mid, 3 low
+        done: false,
+        createdAt: Date.now(),
       };
+      if(!t.title) return;
+      tasks.unshift(t); save(); render();
+    }
 
-      function fileToDataURL(file) {
-        return new Promise((resolve, reject) => {
-          const fr = new FileReader();
-          fr.onload = () => resolve(fr.result);
-          fr.onerror = reject;
-          fr.readAsDataURL(file);
-        });
+    function updateTask(id, patch){
+      const i = tasks.findIndex(x=>x.id===id); if(i<0) return;
+      tasks[i] = {...tasks[i], ...patch}; save(); render();
+    }
+
+    function removeTask(id){ tasks = tasks.filter(x=>x.id!==id); save(); render(); }
+
+    function todayStr(){ const d = new Date(); return d.toISOString().slice(0,10) }
+
+    function matchesFilter(t){
+      if(filter==='all') return true;
+      if(filter==='today') return (t.due && t.due===todayStr());
+      if(filter==='pending') return !t.done;
+      if(filter==='done') return t.done;
+      if(filter==='priority') return t.prio===1 && !t.done;
+      return true;
+    }
+
+    function matchesSearch(t){
+      const q = $('#search').value.trim().toLowerCase();
+      if(!q) return true;
+      return (t.title+"\n"+t.notes).toLowerCase().includes(q);
+    }
+
+    function fmtDue(d){
+      if(!d) return 'Không hạn';
+      const today = todayStr();
+      if(d===today) return 'Hôm nay';
+      const ts = new Date(d), now = new Date(today);
+      const diff = Math.round((ts-now)/86400000);
+      if(diff===1) return 'Ngày mai';
+      if(diff===-1) return 'Hôm qua';
+      return d.split('-').reverse().join('/');
+    }
+
+    function prioBadge(p){ return p==1? 'Cao': (p==3? 'Thấp':'TB'); }
+
+    function render(){
+      const list = $('#list');
+      list.innerHTML = '';
+      const data = tasks.filter(t=>matchesFilter(t)&&matchesSearch(t));
+      if(!data.length){ list.innerHTML = `<div class="empty">Không có việc nào. Hãy thêm mục mới!</div>`; return; }
+
+      for(const t of data){
+        const card = document.createElement('div');
+        card.className = 'card';
+        // swipe rails
+        card.innerHTML = `<div class="rail"><span class="left">✓ Hoàn tất</span><span class="right">Xoá</span></div>`;
+
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.setAttribute('data-id', t.id);
+        row.innerHTML = `
+          <button class="check ${t.done? 'done':''}" aria-label="toggle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <div class="meta">
+            <div class="title ${t.done?'done':''}">${escapeHTML(t.title)}</div>
+            <div class="sub">
+              <span class="badge prio-${t.prio}">Ưu tiên: ${prioBadge(t.prio)}</span>
+              <span class="badge">${fmtDue(t.due)}</span>
+              ${t.notes? `<span class="badge" title="Ghi chú">📝 ${escapeHTML(t.notes.slice(0,30))}${t.notes.length>30?'…':''}</span>`:''}
+            </div>
+          </div>
+          <div class="actions">
+            <button class="iconbtn edit" title="Sửa">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            </button>
+            <button class="iconbtn del" title="Xoá">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+            </button>
+          </div>`;
+
+        // Attach handlers
+        row.querySelector('.check').addEventListener('click', () => updateTask(t.id, {done: !t.done}));
+        row.querySelector('.edit').addEventListener('click', () => openModal(t.id));
+        row.querySelector('.del').addEventListener('click', () => confirmDelete(t.id));
+
+        // swipe gestures on row
+        enableSwipe(card, row, t.id);
+
+        card.appendChild(row);
+        list.appendChild(card);
       }
+    }
 
-      // Escape HTML for safe text injection
-      function esc(s) {
-        return (s || "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/\"/g, "&quot;")
-          .replace(/'/g, "&#39;");
-      }
+    function escapeHTML(s){ return s.replace(/[&<>]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]) ) }
 
-      // Lightbox
-      const lb = {
-        modal: document.getElementById("imgModal"),
-        pic: document.getElementById("imgModalPic"),
-        open(src) {
-          if (!src) return;
-          this.pic.src = src;
-          this.modal.classList.add("is-open");
-          this.modal.setAttribute("aria-hidden", "false");
-          document.addEventListener("keydown", onEscClose);
-        },
-        close() {
-          this.modal.classList.remove("is-open");
-          this.modal.setAttribute("aria-hidden", "true");
-          this.pic.src = "";
-          document.removeEventListener("keydown", onEscClose);
-        },
+    // Swipe: left = delete, right = done
+    function enableSwipe(card, row, id){
+      let startX=0, curX=0, dragging=false;
+      const max = 92; // px
+      row.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; dragging=true; row.style.transition='none'; card.querySelector('.rail').style.pointerEvents='none'; }, {passive:true});
+      row.addEventListener('touchmove', (e)=>{
+        if(!dragging) return; curX = e.touches[0].clientX - startX; // + right, - left
+        const lim = Math.max(Math.min(curX, max), -max);
+        row.style.transform = `translateX(${lim}px)`;
+        card.style.background = lim>20? 'linear-gradient(90deg, rgba(16,185,129,.18), transparent)': (lim<-20? 'linear-gradient(270deg, rgba(239,68,68,.18), transparent)': '');
+      }, {passive:true});
+      row.addEventListener('touchend', ()=>{
+        if(!dragging) return; dragging=false; row.style.transition='transform .18s ease'; card.style.background='';
+        if(curX>68){ updateTask(id, {done:true}); }
+        else if(curX<-68){ confirmDelete(id); }
+        row.style.transform='';
+      }, {passive:true});
+    }
+
+    function openModal(id){
+      editingId = id;
+      const t = tasks.find(x=>x.id===id) || {title: $('#newTitle').value.trim(), due:'', prio:2, notes:''};
+      $('#fTitle').value = t.title || '';
+      $('#fDue').value = t.due || '';
+      $('#fPrio').value = t.prio || 2;
+      $('#fNotes').value = t.notes || '';
+      $('#modal').style.display = 'flex';
+    }
+
+    function closeModal(){ $('#modal').style.display = 'none'; editingId = null; }
+
+    function confirmDelete(id){
+      if(confirm('Xoá công việc này?')) removeTask(id);
+    }
+
+    // ============ UI events ============
+    $('#addBtn').addEventListener('click', ()=>{
+      const title = $('#newTitle').value.trim(); if(!title) return $('#newTitle').focus();
+      addTask(title); $('#newTitle').value='';
+    });
+    $('#newTitle').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ $('#addBtn').click(); }});
+
+    $('#search').addEventListener('input', render);
+
+    // chips & bottom filter
+    function setFilter(val){
+      filter = val;
+      $$('.chip').forEach(c=> c.classList.toggle('active', c.dataset.filter===val));
+      $$('.bbtn').forEach(b=> b.classList.toggle('active', b.dataset.filter===val));
+      render();
+    }
+    $('#chipbar').addEventListener('click', (e)=>{ const b = e.target.closest('.chip'); if(b) setFilter(b.dataset.filter); });
+    $$('.bbtn').forEach(b=>{ if(b.dataset.filter) b.addEventListener('click', ()=> setFilter(b.dataset.filter)); });
+
+    // detail modal shortcuts
+    $('#moreBtn').addEventListener('click', ()=> openModal(null));
+    $('#closeModal').addEventListener('click', closeModal);
+    $('#saveDetail').addEventListener('click', ()=>{
+      const data = {
+        title: $('#fTitle').value.trim(),
+        due: $('#fDue').value,
+        prio: +$('#fPrio').value,
+        notes: $('#fNotes').value.trim()
       };
-      function onEscClose(e) {
-        if (e.key === "Escape") lb.close();
-      }
-      lb.modal.addEventListener("click", (e) => {
-        if (e.target.matches("[data-close]")) lb.close();
-      });
-      els.table.addEventListener("click", (e) => {
-        const img = e.target.closest(".row img");
-        if (img) lb.open(img.getAttribute("src"));
-      });
+      if(!data.title){ alert('Vui lòng nhập tiêu đề'); return; }
+      if(editingId){ updateTask(editingId, data); }
+      else{ addTask(data.title, data); }
+      closeModal();
+    });
+    $('#deleteTask').addEventListener('click', ()=>{ if(editingId){ confirmDelete(editingId); closeModal(); }});
 
-      // ==========================
-      // Auth (prompt demo)
-      // ==========================
-      const btnLogin = document.getElementById("btnLogin");
-      const btnLogout = document.getElementById("btnLogout");
-      const btnRegister = document.getElementById("btnRegister");
-      const authStatus = document.querySelector(".auth-status");
+    // Export / Import JSON (backup)
+    $('#exportBtn').addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify({exportedAt: new Date().toISOString(), tasks}, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'todo-mobile-backup.json';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
 
-      function updateAuthButtons() {
-        const has = !!getToken();
-        btnLogin.style.display = has ? "none" : "";
-        btnRegister.style.display = has ? "none" : "";
-        btnLogout.style.display = has ? "" : "none";
-        authStatus.textContent = has ? "Đã đăng nhập" : "Chưa đăng nhập";
-      }
+    // Import via file picker (long-press on title to open)
+    $('h1').addEventListener('contextmenu', (e)=>{ e.preventDefault(); $('#filePicker').click(); });
+    $('#filePicker').addEventListener('change', async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      try{
+        const text = await file.text();
+        const json = JSON.parse(text);
+        if(Array.isArray(json.tasks)) { tasks = json.tasks; save(); render(); alert('Khôi phục xong!'); }
+        else if(Array.isArray(json)) { tasks = json; save(); render(); alert('Khôi phục xong!'); }
+        else alert('File không hợp lệ');
+      }catch(err){ alert('Không đọc được file'); }
+      e.target.value='';
+    });
 
-      async function loginFlow() {
-        const email = prompt("Email:");
-        if (!email) return;
-        const password = prompt("Mật khẩu:");
-        if (!password) return;
-        try {
-          const r = await apiFetchForm("/auth/login", {
-            username: email,
-            password,
-          });
-          setToken(r.access_token);
-          alert("Đăng nhập OK");
-          updateAuthButtons();
-          all = await DataStore.list();
-          render();
-          refreshAndScheduleOTP();
-        } catch (e) {
-          alert("Login lỗi: " + e.message);
-        }
-      }
-      async function registerFlow() {
-        const email = prompt("Nhập email để đăng ký:");
-        if (!email) return;
-        const password = prompt("Tạo mật khẩu (>= 6 ký tự):");
-        if (!password || password.length < 6) {
-          alert("Mật khẩu tối thiểu 6 ký tự.");
-          return;
-        }
-        try {
-          await apiFetch("/auth/register", {
-            method: "POST",
-            body: { email, password },
-          });
-          const r = await apiFetchForm("/auth/login", {
-            username: email,
-            password,
-          });
-          setToken(r.access_token);
-          alert("Đăng ký & đăng nhập OK");
-          updateAuthButtons();
-          all = await DataStore.list();
-          render();
-          refreshAndScheduleOTP();
-        } catch (e) {
-          alert("Đăng ký lỗi: " + e.message);
-        }
-      }
-      btnLogin.addEventListener("click", loginFlow);
-      btnLogout.addEventListener("click", () => {
-        setToken("");
-        alert("Đã đăng xuất");
-        updateAuthButtons();
-        all = [];
-        render();
-      });
-      btnRegister.addEventListener("click", registerFlow);
-
-      // ==========================
-      // DataStore (API)
-      // ==========================
-      const DataStore = {
-        async list() {
-          return await apiFetch("/accounts", { method: "GET" });
-        },
-        async upsert(acc) {
-          const payload = {
-            code: acc.id,
-            image_b64: acc.image || null,
-            username: acc.username || null,
-            password: acc.password || null,
-            authen: acc.auth || null,
-            note: acc.note || null,
-          };
-          return await apiFetch("/accounts", { method: "POST", body: payload });
-        },
-        async remove(code) {
-          return await apiFetch(`/accounts/${encodeURIComponent(code)}`, {
-            method: "DELETE",
-          });
-        },
-        async secrets(code) {
-          return await apiFetch(
-            `/accounts/${encodeURIComponent(code)}/secrets`,
-            { method: "GET" }
-          );
-        },
-        async otpBulk(codes) {
-          return await apiFetch(`/accounts/otp/bulk`, {
-            method: "POST",
-            body: { codes },
-          });
-        },
-      };
-
-      // ==========================
-      // State & Render
-      // ==========================
-      let all = [];
-      let filter = "";
-
-      function rowTemplate(item) {
-        const imgHtml = item.image_b64
-          ? `<img src="${item.image_b64}" alt="img">`
-          : '<div class="muted">(trống)</div>';
-        const note = esc(item.note || "");
-        const updated = item.updated_at
-          ? new Date(item.updated_at).toLocaleString()
-          : "";
-        return `
-<div class="row" data-id="${esc(item.code)}">
-<div class="cell mono">${esc(item.code)}</div>
-<div>${imgHtml}</div>
-<div>
-<div class="mono">${esc(item.username || "")}</div>
-<div class="muted" style="font-size:12px">Cập nhật: ${esc(updated)}</div>
-</div>
-<div><button class="copy" data-copy-pass data-code="${esc(
-          item.code
-        )}">Copy mật khẩu</button></div>
-<div><button class="copy" data-copy-auth data-code="${esc(
-          item.code
-        )}">Copy authen</button></div>
-<div class="mono" data-otp>
-<div class="badge" data-otp-code>—</div>
-<div class="muted" data-otp-left>(—s)</div>
-</div>
-<div>${note}</div>
-<div><button class="btn danger" data-del="${esc(item.code)}">Xoá</button></div>
-</div>`;
-      }
-      function render() {
-        const kw = filter.trim().toLowerCase();
-        const list = !kw
-          ? all
-          : all.filter(
-              (x) =>
-                (x.code || "").toLowerCase().includes(kw) ||
-                (x.username || "").toLowerCase().includes(kw) ||
-                (x.note || "").toLowerCase().includes(kw)
-            );
-        // Clear rows
-        document
-          .querySelectorAll("#table .row:not(.head)")
-          .forEach((n) => n.remove());
-        const div = document.createElement("div");
-        div.innerHTML = list.map(rowTemplate).join("");
-        const frag = document.createDocumentFragment();
-        while (div.firstChild) frag.appendChild(div.firstChild);
-        els.table.appendChild(frag);
-        els.statCount.textContent = String(list.length);
-      }
-      // ==========================
-      // OTP bulk refresh
-      // ==========================
-      let otpTimer = null;
-      function scheduleOTP() {
-        if (otpTimer) clearInterval(otpTimer);
-        otpTimer = setInterval(refreshOTPOnce, 3000);
-      }
-      async function refreshOTPOnce() {
-        const rows = [...document.querySelectorAll("#table .row:not(.head)")];
-        if (!rows.length) return;
-        const codes = rows.map((r) => r.getAttribute("data-id"));
-        try {
-          const r = await DataStore.otpBulk(codes); // {results: { CODE: {otp,left} }}
-          for (const row of rows) {
-            const code = row.getAttribute("data-id");
-            const codeEl = row.querySelector("[data-otp-code]");
-            const leftEl = row.querySelector("[data-otp-left]");
-            const obj = r?.results?.[code];
-            if (obj && obj.otp) {
-              codeEl.textContent = obj.otp;
-              leftEl.textContent = `(${obj.left}s)`;
-            } else {
-              codeEl.textContent = "—";
-              leftEl.textContent = "(—s)";
-            }
-          }
-        } catch (e) {
-          /* silent */
-        }
-      }
-      function refreshAndScheduleOTP() {
-        refreshOTPOnce();
-        scheduleOTP();
-      }
-
-      // ==========================
-      // Form logic
-      // ==========================
-      function resetForm() {
-        els.id.value = "";
-        els.img.value = "";
-        els.user.value = "";
-        els.pass.value = "";
-        els.auth.value = "";
-        els.otp.textContent = "—";
-        els.otpLeft.textContent = "(—s)";
-        els.note.value = "";
-      }
-      els.btnReset.addEventListener("click", resetForm);
-      els.btnAdd.addEventListener("click", () => {
-        els.id.focus();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-
-      // Client-side OTP preview (WebCrypto)
-      function base32Decode(str) {
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-        let s = (str || "").toUpperCase().replace(/[^A-Z2-7]/g, "");
-        if (!s) return new Uint8Array();
-        let bits = "";
-        for (const ch of s) {
-          const i = alphabet.indexOf(ch);
-          if (i < 0) continue;
-          bits += i.toString(2).padStart(5, "0");
-        }
-        const out = [];
-        for (let i = 0; i + 8 <= bits.length; i += 8)
-          out.push(parseInt(bits.slice(i, i + 8), 2));
-        return new Uint8Array(out);
-      }
-      function counterToBytes(counter) {
-        const buf = new ArrayBuffer(8),
-          dv = new DataView(buf);
-        dv.setUint32(0, 0);
-        dv.setUint32(4, counter >>> 0);
-        return new Uint8Array(buf);
-      }
-      const subtleOk = typeof window !== "undefined" && crypto && crypto.subtle;
-      const keyCache = new Map();
-      async function importKey(bytes) {
-        const k = Array.from(bytes).join(",");
-        if (keyCache.has(k)) return keyCache.get(k);
-        const kk = await crypto.subtle.importKey(
-          "raw",
-          bytes,
-          { name: "HMAC", hash: "SHA-1" },
-          false,
-          ["sign"]
-        );
-        keyCache.set(k, kk);
-        return kk;
-      }
-      async function previewOTP() {
-        const v = els.auth.value.trim();
-        if (!v || !subtleOk) {
-          els.otp.textContent = "—";
-          els.otpLeft.textContent = "(—s)";
-          return;
-        }
-        try {
-          const secretBytes = base32Decode(v);
-          const nowSec = Math.floor(Date.now() / 1000);
-          const counter = Math.floor(nowSec / OTP_PERIOD);
-          const left = OTP_PERIOD - (nowSec % OTP_PERIOD);
-          const msg = counterToBytes(counter);
-          const key = await importKey(secretBytes);
-          const sig = new Uint8Array(
-            await crypto.subtle.sign("HMAC", key, msg)
-          );
-          const idx = sig[19] & 0x0f;
-          const p =
-            ((sig[idx] << 24) |
-              (sig[idx + 1] << 16) |
-              (sig[idx + 2] << 8) |
-              sig[idx + 3]) >>>
-            0;
-          const num = (p & 0x7fffffff) % 1000000;
-          els.otp.textContent = String(num).padStart(6, "0");
-          els.otpLeft.textContent = `(${left}s)`;
-        } catch {
-          els.otp.textContent = "ERR";
-          els.otpLeft.textContent = "";
-        }
-      }
-      els.auth.addEventListener("input", previewOTP);
-      setInterval(previewOTP, 1000);
-
-      // Submit → upsert
-      els.form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const code = els.id.value.trim();
-        if (!code) {
-          alert("Vui lòng nhập Mã tài khoản");
-          return;
-        }
-        let imgData;
-        if (els.img.files && els.img.files[0]) {
-          try {
-            imgData = await fileToDataURL(els.img.files[0]);
-          } catch {
-            alert("Không đọc được ảnh");
-          }
-        }
-        const item = {
-          id: code,
-          image: imgData,
-          username: els.user.value.trim(),
-          password: els.pass.value,
-          auth: els.auth.value.trim(),
-          note: els.note.value,
-        };
-        try {
-          await DataStore.upsert(item);
-          all = await DataStore.list();
-          render();
-          resetForm();
-          refreshAndScheduleOTP();
-        } catch (err) {
-          alert("Lưu tài khoản lỗi: " + err.message);
-        }
-      });
-
-      // Table actions
-      els.table.addEventListener("click", async (e) => {
-        const t = e.target;
-        if (t.matches("[data-copy-pass]")) {
-          const code = t.getAttribute("data-code");
-          try {
-            const s = await DataStore.secrets(code);
-            await navigator.clipboard.writeText(s?.password || "");
-            t.textContent = "Đã copy";
-            setTimeout(() => (t.textContent = "Copy mật khẩu"), 1000);
-          } catch (err) {
-            alert("Không lấy được mật khẩu: " + err.message);
-          }
-        }
-        if (t.matches("[data-copy-auth]")) {
-          const code = t.getAttribute("data-code");
-          try {
-            const s = await DataStore.secrets(code);
-            await navigator.clipboard.writeText(s?.authen || "");
-            t.textContent = "Đã copy";
-            setTimeout(() => (t.textContent = "Copy authen"), 1000);
-          } catch (err) {
-            alert("Không lấy được authen: " + err.message);
-          }
-        }
-        if (t.matches("[data-del]")) {
-          const code = t.getAttribute("data-del");
-          if (confirm(`Xoá tài khoản "${code}"?`)) {
-            try {
-              await DataStore.remove(code);
-              all = await DataStore.list();
-              render();
-              refreshAndScheduleOTP();
-            } catch (err) {
-              alert("Xoá lỗi: " + err.message);
-            }
-          }
-        }
-      });
-
-      // Search
-      els.q.addEventListener("input", () => {
-        filter = els.q.value;
-        render();
-        refreshAndScheduleOTP();
-      });
-
-      // Export & Import
-      els.btnExport.addEventListener("click", async () => {
-        try {
-          const list = await DataStore.list();
-          const data = JSON.stringify(list, null, 2);
-          const blob = new Blob([data], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "account-vault.json";
-          a.click();
-          URL.revokeObjectURL(url);
-        } catch (err) {
-          alert("Export lỗi: " + err.message);
-        }
-      });
-      els.btnImport.addEventListener("click", () => els.importFile.click());
-      els.importFile.addEventListener("change", () => {
-        const f = els.importFile.files?.[0];
-        if (!f) return;
-        const rd = new FileReader();
-        rd.onload = async () => {
-          try {
-            const arr = JSON.parse(rd.result);
-            if (Array.isArray(arr)) {
-              for (const it of arr) {
-                const mapped = {
-                  id: it.code || it.id,
-                  image: it.image_b64 || it.image,
-                  username: it.username || "",
-                  password: "",
-                  auth: "",
-                  note: it.note || "",
-                };
-                await DataStore.upsert(mapped);
-              }
-              all = await DataStore.list();
-              render();
-              alert("Nhập xong!");
-              refreshAndScheduleOTP();
-            } else alert("Tệp không đúng định dạng");
-          } catch (e) {
-            alert("Không đọc được JSON: " + e.message);
-          }
-        };
-        rd.readAsText(f);
-        els.importFile.value = "";
-      });
-
-      // Init
-      (async function init() {
-        updateAuthButtons();
-        try {
-          if (getToken()) all = await DataStore.list();
-          else all = [];
-          render();
-          previewOTP();
-          refreshAndScheduleOTP();
-        } catch (e) {
-          console.warn("Không tải được danh sách:", e);
-        }
-      })();
-    </script>
-  </body>
+    // Initial
+    render();
+  </script>
+</body>
 </html>
